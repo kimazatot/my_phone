@@ -21,11 +21,12 @@ from drf_yasg.views import get_schema_view
 from django.conf.urls.static import static
 from django.conf import settings
 
+# создаем объекта схема_вью для отображения документации сваггера
 schema_view = get_schema_view(
     openapi.Info(
-        title='gatget-marketplace',
-        decription='marketplace swagger',
-        default_version='v1'
+        title='gatget-marketplace', # заголовок
+        decription='marketplace swagger', # описание апишка
+        default_version='v1' # версия апишки
     ),
     public=True
 )
@@ -39,10 +40,12 @@ urlpatterns = [
     path('api/v1/', include('apps.review.urls')),
 ]
 
+# добавляем юрл для обработки медиафайлов
 urlpatterns += static(
     settings.MEDIA_URL, document_root=settings.MEDIA_ROOT
 )
 
+# для обработки статистических файлов
 urlpatterns += static(
     settings.STATIC_URL, document_root=settings.STATIC_ROOT
 )

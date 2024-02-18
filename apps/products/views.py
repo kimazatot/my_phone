@@ -1,76 +1,63 @@
-from rest_framework.response import Response
-from .models import *
-from .serializers import *
-from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import AllowAny, IsAuthenticated, IsAdminUser
-from .permissions import *
-from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework.filters import SearchFilter
-from .models import Product
-from apps.rating.serializers import RateSerializer
-from rest_framework.decorators import action, api_view
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response  # Импортируем класс Response из модуля rest_framework.response
+from .models import Product, Brand  # Импортируем модели Product и Brand из текущего пакета
+from .serializers import ProductSerializer, ProductListSerializer, \
+    BrandSerializer  # Импортируем сериализаторы для продуктов и брендов
+from rest_framework.viewsets import ModelViewSet  # Импортируем базовый класс ModelViewSet из rest_framework.viewsets
+from rest_framework.permissions import AllowAny, IsAuthenticated  # Импортируем классы для управления правами доступа
+from apps.products.permissions import IsAuthorOrAdmin  # Импортируем кастомные права доступа
+from django_filters.rest_framework import DjangoFilterBackend  # Импортируем DjangoFilterBackend для фильтрации
+from rest_framework.filters import SearchFilter  # Импортируем SearchFilter для поиска
+from rest_framework.decorators import action  # Импортируем декоратор для создания дополнительных действий в
+# представлении
+from rest_framework.pagination import PageNumberPagination  # Импортируем класс для пагинации
 
 
 class Pagination(PageNumberPagination):
-    page_size = 3
-    page_query_param = 'page'
+    """
+    Пагинация для представлений.
+    Устанавливает количество элементов на странице и параметр запроса для номера страницы.
+    """
+    page_size = 20  # Устанавливаем количество элементов на странице
+    page_query_param = 'page'  # Устанавливаем имя параметра запроса для номера страницы
 
 
 class ProductViewSet(ModelViewSet):
-    queryset = Product.objects.all().order_by('created_at')
-    serializer_class = ProductSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['category', 'brand', 'price']
-    search_fields = ['name', 'brand']
+    """
+    Представление для модели Product.
+    """
+    queryset = Product.objects.all().order_by(
+        'created_at')  # Задаем запрос для получения списка объектов модели Product
+    serializer_class = ProductSerializer  # Указываем класс сериализатора для модели Product
+    filter_backends = [DjangoFilterBackend, SearchFilter]  # Указываем фильтры для представления
+    filterset_fields = ['brand', 'price']  # Указываем поля для фильтрации
+    search_fields = ['name', 'brand']  # Указываем поля для поиска
 
     def get_permissions(self):
+        """
+        Получает права доступа в зависимости от действия.
+        """
         if self.action in ['list', 'retrieve']:
-            self.permission_classes = [AllowAny]
+            self.permission_classes = [AllowAny]  # Устанавливаем права доступа для просмотра списка и деталей
         elif self.action in ['create', 'update', 'partial_update', 'destroy']:
-            self.permission_classes = [IsAuthenticated, IsBrandPermission]
+            self.permission_classes = [IsAuthenticated,
+                                       IsAuthorOrAdmin]  # Устанавливаем права доступа для создания, обновления, частичного обновления и удаления
         return super().get_permissions()
-
-    # def get_serializer_class(self, *args, **kwargs):
-    #     if self.action == 'list':
-    #         return ProductListSerializer
-    #     return self.serializer_class
-
-    @action(['GET', 'POST', 'DELETE'], detail=True)
-    def rating(self, request, pk):
-        product = self.get_object()
-        user = request.user
-        if request.method == 'GET':
-            ratings = product.ratings.all()
-            serializer = RateSerializer(instance=ratings, many=True)
-            return Response(serializer.data, status=200)
-
-        elif request.method == 'POST':
-            if product.ratings.filter(owner=user).exists():
-                return Response('You already rated this product', status=400)
-            data = request.data
-            serializer = RateSerializer(data=data)
-            serializer.is_valid(raise_exception=True)
-            serializer.save(owner=user, product=product)
-            return Response(serializer.data, status=201)
-
-        else:
-            if not product.ratings.filter(owner=user).exists():
-                return Response("You didn't rated this product")
-            rating = product.ratings.get(owner=user)
-            rating.delete()
-            return Response('Deleted', status=204)
-
 
 
 class BrandViewSet(ModelViewSet):
-    queryset = Brand.objects.all().order_by('name')
-    serializer_class = BrandSerializer
-    search_fields = ['name']
+    """
+    Представление для модели Brand.
+    """
+    queryset = Brand.objects.all().order_by('name')  # Задаем запрос для получения списка объектов модели Brand
+    serializer_class = BrandSerializer  # Указываем класс сериализатора для модели Brand
+    search_fields = ['name']  # Указываем поля для поиска
 
     def get_permissions(self):
+        """
+        Получает права доступа в зависимости от действия.
+        """
         if self.action in ['list', 'retrieve']:
-            self.permission_classes = [AllowAny]
+            self.permission_classes = [AllowAny]  # Устанавливаем права доступа для просмотра списка и деталей
         elif self.action in ['create', 'update', 'partial_update', 'destroy']:
-            self.permission_classes = [IsAuthorPermission, IsBrandPermission]
+            self.permission_classes = [IsAuthorOrAdmin]  # Устанавливаем права доступа для создания, обновления, частичного обновления и удаления
         return super().get_permissions()
