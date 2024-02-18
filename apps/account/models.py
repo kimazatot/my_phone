@@ -51,10 +51,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_staff = models.BooleanField(default=False)
     # оле activation_code для кода активации
     activation_code = models.CharField(max_length=20, blank=True)
-    # поле is_brand для статуса бренда (по умолчанию False)
-    is_brand = models.BooleanField(default=False)
-    # поле brand для названия бренда
-    brand = models.CharField(max_length=40, blank=True)
 
     # присваиваем объекту UserManager наш пользовательский менеджер
     objects = UserManager()
