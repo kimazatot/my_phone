@@ -33,17 +33,6 @@ class ProductListSerializer(ModelSerializer):
         fields = ['name', 'image', 'price']
 
 
-class CategorySerializer(ModelSerializer):
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation['products'] = ProductSerializer(Product.objects.filter(category=instance.pk), many=True).data
-        return representation
-
-
 class BrandSerializer(ModelSerializer):
     user = ReadOnlyField(source='user.name')
 

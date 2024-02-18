@@ -5,3 +5,4 @@ drf-yasg
 psycopg2-binary
 python-decouple
 django-filter
+python-telegram-bot

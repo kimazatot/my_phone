@@ -30,12 +30,13 @@ schema_view = get_schema_view(
     public=True
 )
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('docs/', schema_view.with_ui('swagger')),
     path('api/v1/', include('apps.account.urls')),
     path('api/v1/', include('apps.products.urls')),
-    path('api/v1/', include('apps.review.urls'))
+    path('api/v1/', include('apps.review.urls')),
 ]
 
 urlpatterns += static(

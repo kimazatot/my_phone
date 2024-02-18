@@ -6,20 +6,6 @@ from django.utils import timezone
 User = get_user_model()
 
 
-class Category(models.Model):
-    slug = models.SlugField(max_length=100, primary_key=True, blank=True)
-    name = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='category_img/', blank=True, null=True)
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super().save()
-
-
 class Brand(models.Model):
     slug = models.SlugField(max_length=50, primary_key=True, blank=True)
     name = models.CharField(max_length=100, unique=True)
@@ -30,7 +16,12 @@ class Brand(models.Model):
 
 
 class Product(models.Model):
-    slug = models.SlugField(max_length=100,primary_key=True, blank=True)
+    STATUS_CHOICE = (
+        ('in_stock', 'В наличии'),
+        ('out_of_stock', 'нет в наличии')
+    )
+
+    slug = models.SlugField(max_length=100, primary_key=True, blank=True)
     name = models.CharField(max_length=100)
     brand = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -39,7 +30,6 @@ class Product(models.Model):
     description = models.TextField(blank=True)
     technical_description = models.TextField()
     image = models.ImageField(upload_to='product_img/', blank=True, null=True)
-    category = models.ForeignKey('Category', on_delete=models.CASCADE, related_name='products')
     created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self) -> str:
@@ -49,3 +39,4 @@ class Product(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
         super().save()
+
