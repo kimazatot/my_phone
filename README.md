@@ -1,7 +1,7 @@
 # hackaton-2
 
 
-#@ gadget-marketplace backend
+## gadget-marketplace backend
 
 
 ### Technologies and requirements:
