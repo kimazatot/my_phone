@@ -3,11 +3,7 @@ from apps.category.models import Category
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """
-    Сериализатор для модели Category:
-        slug (ReadOnlyField): Уникальный идентификатор категории в URL (только для чтения).
-    """
-    slug = serializers.ReadOnlyField()  # Slug устанавливается автоматически и доступен только для чтения
+    slug = serializers.ReadOnlyField()
 
     class Meta:
         model = Category

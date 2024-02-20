@@ -38,6 +38,7 @@ urlpatterns = [
     path('api/v1/', include('apps.account.urls')),
     path('api/v1/', include('apps.products.urls')),
     path('api/v1/', include('apps.review.urls')),
+    path('api/v1/', include('apps.brand.urls')),
 ]
 
 # добавляем юрл для обработки медиафайлов

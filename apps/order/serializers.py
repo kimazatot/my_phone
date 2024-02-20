@@ -9,11 +9,6 @@ class OrderItemSerializer(serializers.ModelSerializer):
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    """
-        status (CharField): статус заказа (только для чтения).
-        user (ReadOnlyField): пользователь, сделавший заказ (только для чтения).
-        products (OrderItemSerializer): сериализатор для товаров в заказе (только для записи).
-    """
     status = serializers.CharField(read_only=True)
     user = serializers.ReadOnlyField(source='user.email')
     products = OrderItemSerializer(write_only=True, many=True)
@@ -23,12 +18,6 @@ class OrderSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        """
-            validated_data (dict): валидированные данные для создания заказа.
-
-        Returns:
-            Order: созданный объект заказа.
-        """
         products = validated_data.pop('products')
         request = self.context.get('request')
         user = request.user

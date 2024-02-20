@@ -3,11 +3,6 @@ from django.utils.text import slugify
 
 
 class Category(models.Model):
-    """
-    Модель, представляющая категорию товаров:
-        slug (SlugField): Уникальный идентификатор категории в URL.
-        name (CharField): Название категории.
-    """
     slug = models.SlugField(max_length=5, primary_key=True, blank=True)
     name = models.CharField(max_length=50, unique=True)
 

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'apps.review',
     'apps.order',
     'apps.category',
+    'apps.brand',
 
 
 ]
